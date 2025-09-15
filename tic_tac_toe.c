@@ -17,6 +17,7 @@ void score_board();
 int game_state(int board[3][3]);
 void user_turn();
 void computer_turn();
+void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, int move_c);
 void computer_turn_hard_mode();
 void clear_screen();
 void run_game();
@@ -168,7 +169,7 @@ int game_state(int board[3][3]) {
         for (int j = 0; j < 3; j++)
         {
             if (!board[i][j]) {
-                return 0;
+                return 0; // game is on
             }
         }
         
@@ -199,7 +200,6 @@ void computer_turn() {
         random_c = rand() % 3;
     }while(board[random_r][random_c]);
 
-    // printf("\n%d %d\n", random_r, random_c);  //debu
     board[random_r][random_c] = 2;
 }
 
@@ -212,16 +212,8 @@ void clear_screen() {
 }
 
 int turn = 2;
-int store_wins[3][3] = {
-        {0,0,0},
-        {0,0,0},
-        {0,0,0}
-    };
-int store_depth[3][3] = { // to make the 
-        {9,9,9},
-        {9,9,9},
-        {9,9,9}
-    };
+int store_wins[3][3];
+int store_depth[3][3];
 
 void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, int move_c) {
     for (int i = 0; i < 3; i++)
@@ -266,7 +258,7 @@ void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, i
 
 void computer_turn_hard_mode() {
     // 1. Calculate all poss moves
-    // 2. take the move with minimum lose or max wins
+    // 2. take the move with max wins
     // 3. take the move where fast win
     //
 
