@@ -249,7 +249,7 @@ void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, i
             }
             else if (current_game_state==-1)
             {
-                store_wins[move_r][move_c] += 1;
+                store_wins[move_r][move_c] += 0;
             }
             else{
                 calculate_all_poss(board_copy, next_turn, depth+1, move_r, move_c);
@@ -276,6 +276,7 @@ void computer_turn_hard_mode() {
     int best_count = 0;
     int best_win_count = 0;
     int min_depth_in_arr = 9;
+    int r; int c;
 
     int poss_moves[9][2];
     for (int i = 0; i < 9; i++)    // making the poss_moves
@@ -389,8 +390,8 @@ void computer_turn_hard_mode() {
 
     for (int i = 0; i < best_win_count; i++)
     {
-        int r = max_win_pos[i][0];
-        int c = max_win_pos[i][1];
+        r = max_win_pos[i][0];
+        c = max_win_pos[i][1];
         if (store_depth[r][c] < min_depth_in_arr) {
             min_depth_in_arr = store_depth[r][c];
         }
@@ -398,8 +399,8 @@ void computer_turn_hard_mode() {
     
     for (int i = 0; i < best_win_count; i++)
     {
-        int r = max_win_pos[i][0];
-        int c = max_win_pos[i][1];
+        r = max_win_pos[i][0];
+        c = max_win_pos[i][1];
         if (store_depth[r][c] == min_depth_in_arr) {
             poss_moves[best_count][0] = r;
             poss_moves[best_count][1] = c;
@@ -418,4 +419,5 @@ void computer_turn_hard_mode() {
     }
     
 
+}
 }
