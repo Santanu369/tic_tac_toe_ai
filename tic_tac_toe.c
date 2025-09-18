@@ -17,7 +17,6 @@ void score_board();
 int game_state(int board[3][3]);
 void user_turn();
 void computer_turn();
-void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, int move_c);
 void computer_turn_hard_mode();
 void clear_screen();
 void run_game();
@@ -169,7 +168,7 @@ int game_state(int board[3][3]) {
         for (int j = 0; j < 3; j++)
         {
             if (!board[i][j]) {
-                return 0; // game is on
+                return 0;
             }
         }
         
@@ -200,6 +199,7 @@ void computer_turn() {
         random_c = rand() % 3;
     }while(board[random_r][random_c]);
 
+    // printf("\n%d %d\n", random_r, random_c);  //debu
     board[random_r][random_c] = 2;
 }
 
@@ -212,8 +212,16 @@ void clear_screen() {
 }
 
 int turn = 2;
-int store_wins[3][3];
-int store_depth[3][3];
+int store_wins[3][3] = {
+        {0,0,0},
+        {0,0,0},
+        {0,0,0}
+    };
+int store_depth[3][3] = { // to make the 
+        {9,9,9},
+        {9,9,9},
+        {9,9,9}
+    };
 
 void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, int move_c) {
     for (int i = 0; i < 3; i++)
@@ -227,21 +235,21 @@ void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, i
             int current_game_state = game_state(board_copy);
             int next_turn = 3- turn;
             if (current_game_state==2){
-                store_wins[move_r][move_c] += 10 - depth;
+                store_wins[move_r][move_c] += 10;
                 if (store_depth[move_r][move_c] > depth) {
                     store_depth[move_r][move_c] = depth;
                 }
             }
             else if (current_game_state==1)
             {
-                store_wins[move_r][move_c] -= 10 - depth;
+                store_wins[move_r][move_c] -= 10;
                 if (store_depth[move_r][move_c] > depth) {
                     store_depth[move_r][move_c] = depth;
                 }
             }
             else if (current_game_state==-1)
             {
-                store_wins[move_r][move_c] += 0;
+                store_wins[move_r][move_c] += 1;
             }
             else{
                 calculate_all_poss(board_copy, next_turn, depth+1, move_r, move_c);
@@ -258,7 +266,7 @@ void calculate_all_poss(int board_copy[3][3], int turn, int depth, int move_r, i
 
 void computer_turn_hard_mode() {
     // 1. Calculate all poss moves
-    // 2. take the move with max wins
+    // 2. take the move with minimum lose or max wins
     // 3. take the move where fast win
     //
 
@@ -266,6 +274,8 @@ void computer_turn_hard_mode() {
     int max_wins = -1000;
     int min_depth = 9;
     int best_count = 0;
+    int best_win_count = 0;
+    int min_depth_in_arr = 9;
 
     int poss_moves[9][2];
     for (int i = 0; i < 9; i++)    // making the poss_moves
@@ -276,6 +286,17 @@ void computer_turn_hard_mode() {
         }
         
     }
+
+    int max_win_pos[9][2];      // making the max_win_positions it stores all the pos with same no. of wins
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            max_win_pos[i][j] = -1;
+        }
+        
+    }
+    
     
 
     for (int i = 0; i < 3; i++)          // making store_wins
@@ -353,14 +374,41 @@ void computer_turn_hard_mode() {
     {
         for (int j = 0; j < 3; j++)
         {
-            if(store_wins[i][j] == max_wins && store_depth[i][j] == min_depth) {
-                poss_moves[best_count][0] = i;
-                poss_moves[best_count][1] = j;
-                best_count++;
+            if(store_wins[i][j] == max_wins) {  // store_depth[i][j] == min_depth
+                max_win_pos[best_win_count][0] = i;
+                max_win_pos[best_win_count][1] = j;
+                best_win_count++;
+
+                // poss_moves[best_count][0] = i;
+                // poss_moves[best_count][1] = j;
+                // best_count++;
             }
         }
         
     }
+
+    for (int i = 0; i < best_win_count; i++)
+    {
+        int r = max_win_pos[i][0];
+        int c = max_win_pos[i][1];
+        if (store_depth[r][c] < min_depth_in_arr) {
+            min_depth_in_arr = store_depth[r][c];
+        }
+    }
+    
+    for (int i = 0; i < best_win_count; i++)
+    {
+        int r = max_win_pos[i][0];
+        int c = max_win_pos[i][1];
+        if (store_depth[r][c] == min_depth_in_arr) {
+            poss_moves[best_count][0] = r;
+            poss_moves[best_count][1] = c;
+            best_count++;
+        }
+        
+    }
+    
+    
     
     if (best_count > 0) {
         int choice = rand() % best_count;
